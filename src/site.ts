@@ -1,6 +1,7 @@
 // Site-wide settings in one place.
 
-export const SITE_NAME = 'Signal Log';
+export const SITE_NAME = 'Nick Little';
+export const SITE_TAGLINE = 'Marketing leader, connected-vehicle and public-safety tech';
 export const LINKEDIN = 'https://www.linkedin.com/in/nicholas-little-a4559327/';
 
 // Résumé: when you have a site-safe PDF (no phone number or email), put it in

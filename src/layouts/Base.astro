@@ -1,7 +1,7 @@
 ---
 // The frame every page sits in: head, header, footer.
 import '../styles/global.css';
-import { SITE_NAME, LINKEDIN } from '../site';
+import { SITE_NAME, SITE_TAGLINE, LINKEDIN } from '../site';
 
 interface Props {
   title?: string;
@@ -16,7 +16,7 @@ const {
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname.replace(base, '') || '/';
-const pageTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · Nick Little`;
+const pageTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · ${SITE_TAGLINE}`;
 const wrap = wide ? 'wrap wrap-wide' : 'wrap';
 ---
 <!doctype html>
