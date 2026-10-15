@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+// Drafts show up while you preview locally (npm run dev) but are hidden on the live site.
+const posts = (await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+<Base>
+  <section class="intro">
+    <p class="kicker">// build log</p>
+    <h1>Building real AI systems, as a non-engineer.</h1>
+    <p>I'm a marketing director, not a programmer. I build anyway: agents that run while I sleep, memory for my AI, a glowing status light on my desk.</p>
+    <p class="dim">This is the honest log. What worked, what broke, what it cost, and what I'd do differently.</p>
+  </section>
+
+  <ul class="post-list">
+    {posts.map((post) => (
+      <li>
+        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+        <div>
+          <a class="title" href={`${base}/posts/${post.id}/`}>{post.data.title}</a>
+          {post.data.draft && <span class="draft-tag">draft</span>}
+        </div>
+        <p>{post.data.description}</p>
+      </li>
+    ))}
+    {posts.length === 0 && <li><p>First entries are on the bench. Check back soon.</p></li>}
+  </ul>
+</Base>
