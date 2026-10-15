@@ -1,33 +1,123 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { LINKEDIN, RESUME_FILE } from '../site';
 
-// Drafts show up while you preview locally (npm run dev) but are hidden on the live site.
-const posts = (await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = (await getCollection('projects', ({ data }) => import.meta.env.DEV || !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const resume = RESUME_FILE ? `${base}/${RESUME_FILE}` : '';
+
+const whatIDo = [
+  ['Brand and narrative', 'Positioning, messaging and thought leadership for technical products and government buyers.'],
+  ['Demand and pipeline', 'Full-funnel demand gen accountable to pipeline and CAC, not vanity metrics.'],
+  ['GTM and sales enablement', 'Competitive positioning, playbooks and collateral that sales actually uses.'],
+  ['AI-native operations', 'Agents and workflows that connect the CRM, ad platforms and analytics so a small team runs like a big one.'],
+];
+
+// Delete any line here to drop that number from the site.
+const results = [
+  ['44% → 64%', 'MQL-to-opportunity rate'],
+  ['+40%', 'Win rate, year over year'],
+  ['+29%', 'Won revenue in Q4 2025, with average deal size +106%'],
+  ['−90%', 'Paid search CAC, from broad campaigns to precision intent targeting'],
+  ['~10x', 'Deal value from field events vs. equivalent conference spend'],
+  ['+1,160%', 'LinkedIn followers year over year, with a Reels-first content engine'],
+];
+
+const experience = [
+  ['Director of Marketing', 'HAAS Alert', 'Jul 2025 – present', 'Connected-vehicle safety platform for law enforcement, fire, EMS, DOTs and fleets. Promoted to Director after three months; own brand, demand gen, GTM and pipeline.'],
+  ['Co-Founder, Growth Marketing', 'Redwork Lab', 'Oct 2022 – present', 'Consultancy; strategic marketing lead for three seed to Series A B2B tech startups.'],
+  ['Director of Marketing', 'Travelers Insurance', 'Apr 2023 – Sep 2024', "Product marketing and GTM for two new products in Travelers' technology incubator; validated a combined $50M market opportunity."],
+  ['Growth Marketing Manager', 'Flowhaven', 'May 2020 – Nov 2022', '285% more qualified inbound leads and $500K in new pipeline.'],
+  ['Field Marketing Specialist', 'BIOPAC Systems', 'Mar 2019 – Apr 2020', '$1.2M in new pipeline; 30 technical events a year with field sales.'],
+];
+
+const tools = ['HubSpot', 'Marketo', 'Google Ads (certified)', 'GA4', 'Google Tag Manager', 'Meta Ads', 'Figma', 'PowerBI', 'HTML/CSS', 'Claude Code', 'Cowork'];
 ---
-<Base>
+<Base wide>
   <section class="intro">
-    <p class="kicker">// build log</p>
-    <h1>Building real AI systems, as a non-engineer.</h1>
-    <p>I'm a marketing director, not a programmer. I build anyway: agents that run while I sleep, memory for my AI, a glowing status light on my desk.</p>
-    <p class="dim">This is the honest log. What worked, what broke, what it cost, and what I'd do differently.</p>
+    <p class="kicker">{'// portfolio'}</p>
+    <h1>Marketing leader for connected-vehicle and public-safety tech. I build the AI systems my team runs on.</h1>
+    <p class="dim">11 years owning brand, demand gen and pipeline at B2B hardware-software companies, from seed-stage startups to a Fortune 100 incubator. I'm not an engineer. I build anyway, with Claude.</p>
+    <div class="buttons">
+      <a class="btn btn-primary" href="#work">See my work</a>
+      {resume && <a class="btn" href={resume} download>Download résumé</a>}
+    </div>
   </section>
 
-  <ul class="post-list">
-    {posts.map((post) => (
-      <li>
-        <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
-        <div>
-          <a class="title" href={`${base}/posts/${post.id}/`}>{post.data.title}</a>
-          {post.data.draft && <span class="draft-tag">draft</span>}
+  <section class="section">
+    <h2 class="eyebrow">What I do</h2>
+    <div class="grid grid-4">
+      {whatIDo.map(([t, d]) => (
+        <div class="block">
+          <h3 class="block-title">{t}</h3>
+          <p>{d}</p>
         </div>
-        <p>{post.data.description}</p>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="eyebrow">Results</h2>
+    <div class="grid grid-3 results">
+      {results.map(([n, l]) => (
+        <div class="stat">
+          <span class="stat-num">{n}</span>
+          <span class="stat-label">{l}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="work">
+    <h2 class="eyebrow">Selected work</h2>
+    <p class="section-intro">How I work: real marketing problems, solved with systems I build myself.</p>
+    <ul class="cards cards-3">
+      {projects.map((p) => (
+        <li>
+          <a class="card" href={`${base}/work/${p.id}/`}>
+            <span class="card-title">{p.data.title}</span>
+            <span class="card-line">{p.data.summary}</span>
+            <span class="card-more">read the build →</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="also measure">
+      <h3 class="eyebrow eyebrow-sm">Also built</h3>
+      <ul>
+        <li><strong>New-customer launch kits.</strong> CRM lookup, a template-locked press release generator, CRM-verified recipients, and a staged delivery email with a hold-until date. Humans send.</li>
+        <li><strong>Code-generated sales collateral.</strong> One source produces the product guide as a PDF, a deck and an editable copy doc, so versions never drift.</li>
+        <li><strong>Content operations.</strong> Project boards, intake forms and chat alerts, with Claude turning a plain-language weekly plan into assigned tasks.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section measure" id="experience">
+    <h2 class="eyebrow">Experience</h2>
+    <ol class="jobs">
+      {experience.map(([role, co, dates, line]) => (
+        <li>
+          <div class="job-head">
+            <span class="job-role">{role}, {co}</span>
+            <span class="meta">{dates}</span>
+          </div>
+          <p>{line}</p>
+        </li>
+      ))}
+      <li>
+        <div class="job-head"><span class="job-role">Earlier</span></div>
+        <p>Demand Marketing Specialist at Fileboard; freelance technology writer published in Forbes and the HubSpot Sales Blog.</p>
       </li>
-    ))}
-    {posts.length === 0 && <li><p>First entries are on the bench. Check back soon.</p></li>}
-  </ul>
+    </ol>
+    <p class="edu"><span class="job-role">Education</span> Studied Marketing, California State University, East Bay</p>
+    {resume && <p class="meta"><a href={resume} download>Full résumé (PDF)</a></p>}
+    <p class="tools meta">{tools.join(' · ')}</p>
+  </section>
+
+  <section class="section contact measure">
+    <h2 class="contact-line">Hiring for a marketing leader who can build? <a href={LINKEDIN} target="_blank" rel="noopener">Let's talk on LinkedIn.</a></h2>
+  </section>
 </Base>

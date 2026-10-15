@@ -1,17 +1,23 @@
 ---
 // The frame every page sits in: head, header, footer.
 import '../styles/global.css';
+import { SITE_NAME, LINKEDIN } from '../site';
 
 interface Props {
   title?: string;
   description?: string;
+  wide?: boolean; // the home page uses a wider column for its grids
 }
-const { title, description = 'A build log by a marketer who builds real AI systems.' } = Astro.props;
+const {
+  title,
+  description = 'Nick Little: marketing leader for connected-vehicle and public-safety tech, who builds the AI systems his team runs on.',
+  wide = false,
+} = Astro.props;
 
-const SITE_NAME = 'Signal Log'; // placeholder name — change in one place
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname.replace(base, '') || '/';
-const pageTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+const pageTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · Nick Little`;
+const wrap = wide ? 'wrap wrap-wide' : 'wrap';
 ---
 <!doctype html>
 <html lang="en">
@@ -30,24 +36,30 @@ const pageTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
     />
   </head>
   <body>
+    <div class="topline">
+      <div class={wrap}>
+        You can contact me through my <a href={LINKEDIN} target="_blank" rel="noopener">LinkedIn</a>.
+      </div>
+    </div>
     <header class="site-header">
-      <div class="wrap">
-        <a class="logo" href={`${base}/`}><span class="dot"></span>{SITE_NAME}</a>
+      <div class={wrap}>
+        <a class="logo" href={`${base}/`}><span class="dot status-dot"></span>{SITE_NAME}</a>
         <nav>
-          <a href={`${base}/`} aria-current={path === '/' ? 'page' : undefined}>log</a>
+          <a href={`${base}/#work`} aria-current={path.startsWith('/work') ? 'page' : undefined}>work</a>
+          <a href={`${base}/#experience`}>experience</a>
           <a href={`${base}/about/`} aria-current={path.startsWith('/about') ? 'page' : undefined}>about</a>
         </nav>
       </div>
     </header>
     <hr class="rule" />
     <main>
-      <div class="wrap">
+      <div class={wrap}>
         <slot />
       </div>
     </main>
     <footer class="site-footer">
       <hr class="rule" />
-      <div class="wrap">
+      <div class={wrap}>
         <p class="meta">Built by Nick, with AI, in public. Written in Markdown, shipped with Git.</p>
       </div>
     </footer>
