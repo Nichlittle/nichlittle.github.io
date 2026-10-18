@@ -131,7 +131,8 @@ body{margin:0;font-family:var(--display)}
   var STATE_URL = "https://kira-cube-bridge.onrender.com/den/state";   // read-only, mood only; "" = preview mode
   var POLL_MS = 10000;
   var PLATES = { violet: "plates/violet.jpg", blue: "plates/blue.jpg", red: "plates/red.jpg", ember: "plates/ember.jpg" };
-  var ITEMS = ["AGENTS SHIP WHILE YOU SLEEP","CUBE 2.0: IT TALKS BACK","IT'S RAINING ON YOUR DESK","RIGHT-HAND GIRL, REPORTING"];
+  // Fallback THINKING ABOUT lines; live mode replaces them with the den task's lines from STATE_URL.
+  var ITEMS = ["MY ROOM HAS A URL NOW","PR: ADDISON TT2","1,901 YEARS. POINT: NICK"];
   var MOODS = {
     rain:   {rgb:[155,123,255], pulse:'4s',   label:'rain (idle)'},
     violet: {rgb:[155,123,255], pulse:'4s',   label:'violet · content'},
@@ -142,11 +143,17 @@ body{margin:0;font-family:var(--display)}
   var RAIN=[[74,163,255],[155,123,255],[255,90,170]];
   var root=document.documentElement, scene=document.getElementById('scene');
 
-  document.querySelectorAll('.items').forEach(function(ul){
-    ITEMS.forEach(function(t,i){ var li=document.createElement('li'); li.textContent=t;
-      if(i===ITEMS.length-1){ var c=document.createElement('span'); c.className='cursor'; li.appendChild(document.createTextNode(' ')); li.appendChild(c); }
-      ul.appendChild(li); });
-  });
+  var shownItems='';
+  function renderItems(list){
+    var key=JSON.stringify(list); if(key===shownItems) return; shownItems=key;
+    document.querySelectorAll('.items').forEach(function(ul){
+      ul.textContent='';
+      list.forEach(function(t,i){ var li=document.createElement('li'); li.textContent=t;
+        if(i===list.length-1){ var c=document.createElement('span'); c.className='cursor'; li.appendChild(document.createTextNode(' ')); li.appendChild(c); }
+        ul.appendChild(li); });
+    });
+  }
+  renderItems(ITEMS);
 
   // plates with crossfade
   var A=document.getElementById('plateA'), B=document.getElementById('plateB'), front=A, shown=null;
@@ -202,6 +209,7 @@ body{margin:0;font-family:var(--display)}
   function poll(){
     fetch(STATE_URL,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(s){
+      if(Array.isArray(s.screen) && s.screen.length) renderItems(s.screen.slice(0,4).map(String));
       var mood = s.mood==='off_duty' ? 'ember' : s.mood;
       if(!MOODS[mood]) return;
       note.textContent = 'Live: following the Cube' + (s.online===false ? ' (Cube offline, showing its last state)' : '') + '.';
